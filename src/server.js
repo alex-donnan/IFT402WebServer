@@ -18,9 +18,9 @@ store.on('err', function(err) {
 });
 
 //middleware
-app.use('/css', express.static('D:/Documents/IFTFinalClass/IFT402/css'));
-app.use('/src', express.static('D:/Documents/IFTFinalClass/IFT402/src'));
-app.use('/img', express.static('D:/Documents/IFTFinalClass/IFT402/img'));
+app.use('/css', express.static('/IFT402/css'));
+app.use('/src', express.static('/IFT402/src'));
+app.use('/img', express.static('/IFT402/img'));
 app.use(express.urlencoded({
 	extended: true
 }));

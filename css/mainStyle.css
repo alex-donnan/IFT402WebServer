@@ -1,0 +1,448 @@
+/*
+Style sheet for Button main
+*/
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+p {
+	padding-left: 5%;
+	padding-right: 5%;
+	text-align: left;
+}
+
+/* Fancy stylization, specifically scrollbar */
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f100; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #bbb; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #999; 
+}
+
+
+/* Class information */
+
+/* Generals */
+.add, .cancel {
+	bottom: 4px;
+	float: right;
+	height: 24px;
+	position: absolute;
+	right: 4px;
+	width: 24px;
+}
+
+.confirm {
+	bottom: 4px;
+	float: right;
+	height: 24px;
+	position: absolute;
+	right: 32px;
+	width: 24px;
+}
+
+.confirm_task {
+	bottom: 4px;
+	float: right;
+	height: 24px;
+	position: relative;
+	right: 4px;
+	width: 24px;
+}
+
+.add:hover, .confirm:hover, .confirm_task:hover, .cancel:hover {
+	cursor: pointer;
+	opacity: 0.8;
+}
+
+.clear {
+	clear: both;
+}
+
+/* Calendar related classes */
+.calendar {
+	border: 3px solid #cbbbe6;
+	border-radius: 6px;
+	grid-area: calendar;
+	grid-template-columns: 65% 35%;
+	grid-template-rows: 15% 85%;
+	grid-template-areas:
+		"caldisplaytitle caledit"
+		"caldisplay caledit";
+	height: 100%;
+	width: 100%;
+}
+
+.calendar .date {
+	grid-area: caldisplay;
+	height: 80%;
+	text-align: center;
+	width: 100%;
+}
+
+.calendar .date .display {
+	width: 100%;
+}
+
+.calendar .date .display th {
+	background: #e5e5e5;
+}
+
+.calendar .date .display td {
+	height: 36px;
+}
+
+.calendar .date .title {
+	grid-area: caldisplaytitle;
+	margin-left: 5%;
+	margin-top: 5%;
+	width: 90%;
+}
+
+.calendar .edit {
+	background: #f5f5f5;
+	grid-area: caledit;
+	position: relative;
+	text-align: center;
+}
+
+.calendar .edit #calendar_info {
+	height: 50%;
+	margin-left: 1%;
+	margin-top: 1%;
+	overflow: auto;
+	padding: 0;
+	width: 98%;
+}
+
+/* Chat related classes */
+
+.chat {
+	border: 3px solid #cbbbe6;
+	border-radius: 6px;
+	color: black;
+	display: grid;
+	grid-area: chat;
+	grid-template-columns: 15% 85%;
+	grid-template-rows: 90% 10%;
+	grid-template-areas:
+		"cgroups chatbox"
+		"cgroups input";
+	height: 100%;
+	width: 100%;
+}
+
+.chat .groups {
+	background: #f5f5f5;
+	grid-area: cgroups;
+	position: relative;
+	text-align: center;
+}
+
+.chat .groups #chat_group {
+	height: 98%;
+	list-style-type: none;
+	margin-left: 1%;
+	margin-top: 1%;
+	padding: 0;
+	width: 98%;
+}
+
+.chat .groups #chat_group li:hover {
+	cursor: pointer;
+}
+
+.chat .groups .create_chat {
+	border: 3px solid #cbbbe6;
+	border-radius: 6px;
+	background: #f5f5f5;
+	display: none;
+	left: 50%;
+	min-width: 240px;
+	padding: 8px;
+	position: fixed;
+	text-align: left;
+	transform: translate(-50%, -50%);
+	top: 25%;
+	width: 20%;
+	z-index: 1;
+}
+
+.chat .groups .create_chat #chat_usernames {
+	height: 48px;
+	margin-left: 1%;
+	margin-top: 1%;
+	overflow: auto;
+	padding: 0;
+	width: 98%;
+}
+
+.chat .chatbox {
+	border: 1px solid #c1c1c1;
+	border-radius: 6px;
+	grid-area: chatbox;
+	height: 97%;
+	margin-top: 1%;
+	margin-left: 1%;
+	width: 98%;
+}
+
+.chat .chatbox #messages {
+	height: 98%;
+	list-style-type: none;
+	margin-left: 1%;
+	margin-top: 1%;
+	overflow: auto;
+	padding: 0;
+	width: 98%;
+}
+
+.chat .input {
+	grid-area: input;
+	margin: 1.5%;
+}
+
+.chat .input #text_input {
+	display: inline-block;
+	float: left;
+	width: 72%;
+}
+
+.chat .input #text_send {
+	background-color: #cbbbe6;
+  	border: none;
+  	color: black;
+  	cursor: pointer;
+  	display: inline-block;
+  	float: right;
+  	min-width: 24px;
+	width: 20%;
+}
+
+.chat .input #text_send:hover {
+	opacity: 0.8;
+}
+
+.logo {
+	grid-area: logo;
+	width: 248px;
+}
+
+.logout {
+	align-self: end;
+	background-color: #cbbbe6;
+  	border: none;
+  	color: black;
+  	cursor: pointer;
+	grid-area: logout;
+	height: 10%;
+	justify-self: end;
+	padding: 14px 10%;
+	text-align: center;
+	text-decoration: none;
+	width: 32px;
+}
+
+.logout:hover {
+	opacity: 0.8;
+}
+
+/* Tasks related classes */
+.tasks {
+	border: 3px solid #cbbbe6;
+	border-radius: 6px;
+	display: grid;
+	grid-area: tasks;
+	grid-template-columns: 15% 50% 35%;
+	grid-template-rows: 100%;
+	grid-template-areas:
+		"tgroups tlist tlist";
+	height: 100%;
+	width: 100%;
+}
+
+.tasks .groups {
+	background: #f5f5f5;
+	grid-area: tgroups;
+	position: relative;
+	text-align: center;
+}
+
+.tasks .groups #task_group {
+	height: 98%;
+	list-style-type: none;
+	margin-left: 1%;
+	margin-top: 1%;
+	padding: 0;
+	width: 98%;
+}
+
+.tasks .groups #task_group li:hover {
+	cursor: pointer;
+}
+
+.tasks .groups .create_task {
+	border: 3px solid #cbbbe6;
+	border-radius: 6px;
+	background: #f5f5f5;
+	display: none;
+	left: 50%;
+	min-width: 240px;
+	padding: 8px;
+	position: fixed;
+	text-align: left;
+	transform: translate(-50%, -50%);
+	top: 25%;
+	width: 20%;
+	z-index: 1;
+}
+
+.tasks .groups .create_task #task_usernames {
+	height: 48px;
+	margin-left: 1%;
+	margin-top: 1%;
+	overflow: auto;
+	padding: 0;
+	width: 98%;
+}
+
+.tasks .task_list {
+	display: grid;
+	grid-template-columns: 100%;
+	grid-template-rows: auto 48px;
+	grid-template-areas:
+		"tdisplay"
+		"tfooter";
+	grid-area: tlist;
+	height: 100%;
+	position: relative;
+	text-align: center;
+	width: 98%;
+}
+
+.tasks .task_list #task_display {
+	grid-area: tdisplay;
+	height: 100%;
+	margin-bottom: 28px;
+	margin-left: 1%;
+	margin-top: 1%;
+	overflow-x: scroll;
+	overflow-y: hidden;
+	padding: 0;
+	white-space: nowrap;
+}
+
+.tasks .task_list #task_display #task_single {
+	border: 1px solid #c1c1c1;
+	border-radius: 6px;
+	display: inline-block;
+	height: 80%;
+	margin: 1%;
+	overflow: auto;
+	padding: 1%;
+	text-align: left;
+	vertical-align: top;
+	white-space: initial;
+	width: 25%;
+}
+
+.tasks .task_list #task_display #task_single input {
+	display: block;
+	float: left;
+	margin-left: 5%;
+	overflow: auto;
+	vertical-align: none;
+	width: auto;
+}
+
+.tasks .task_list #task_footer {
+	grid-area: tfooter;
+}
+
+.tasks .edit {
+	background: #f5f5f5;
+	display: none;
+	grid-area: tedit;
+	grid-column: 3;
+	grid-row: 1;
+	height: 100%;
+	opacity: 1;
+	position: relative;
+	text-align: center;
+}
+
+.tasks .edit .task_info {
+	height: 75%;
+	margin-left: 1%;
+	margin-top: 1%;
+	overflow: hidden;
+	padding: 0;
+	width: 98%;
+	z-index: -1;
+}
+
+.tasks .edit .task_info #task_todo_list {
+	height: 84px;
+	margin-left: 10%;
+	overflow: scroll;
+	text-align: left;
+}
+
+.tasks .edit .task_info textarea, input {
+	border: 1px solid #c1c1c1;
+	border-radius: 6px;
+	margin-left: 1%;
+	margin-top: 1%;
+	outline: none;
+	overflow: auto;
+	resize: none;
+	width: 90%;
+}
+
+.tasks .edit .add {
+	bottom: 4px;
+	float: right;
+	height: 24px;
+	position: absolute;
+	right: 4px;
+	width: 24px;
+}
+
+.tasks .edit .add:hover {
+	opacity: 0.8;
+}
+
+/* Full wrapper */
+
+.wrapper {
+	align-items: stretch;
+	display: grid;
+	grid-template-columns: 48% 48%;
+	grid-template-rows: 10% 40% 40% 5%;
+	grid-template-areas:
+		"logo logout"
+		"chat tasks"
+		"chat calendar"
+		". .";
+	grid-gap: 8px;
+	height: 90vh;
+	margin-left: 1.5%;
+	overflow: auto;
+	width: 100%;
+}

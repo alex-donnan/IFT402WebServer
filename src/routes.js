@@ -31,7 +31,7 @@ router.get('/createUser.html', function(req, res) {
 	if (req.session.login == true) {
 		res.redirect('/index.html');
 	}
-	res.sendFile('/createUser.html', {'root': 'D:/Documents/IFTFinalClass/IFT402/'});
+	res.sendFile('/createUser.html', {'root': '/IFT402/'});
 });
 	
 router.get('/index.html', function(req, res) {
@@ -41,9 +41,9 @@ router.get('/index.html', function(req, res) {
 	console.log('TEST: Checking session');
 	if (req.session.login == true) {
 		console.log('STATUS: Session ok')
-		res.sendFile('/index.html', {'root': 'D:/Documents/IFTFinalClass/IFT402/'});
+		res.sendFile('/index.html', {'root': '/IFT402/'});
 	} else {
-		res.sendFile('/login.html', {'root': 'D:/Documents/IFTFinalClass/IFT402/'});
+		res.sendFile('/login.html', {'root': '/IFT402/'});
 	}
 });
 

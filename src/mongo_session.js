@@ -6,9 +6,9 @@ var fs = require('fs'),
 	mongo_client = require('mongodb').MongoClient;
 
 //session store
-var user_rights = (process.env.ADMIN || "admin_donnan"),
-	user_pass = (process.env.LOGIN || "quixote229"),
-	client_uri = "mongodb+srv://" + user_rights + ":" + user_pass + "@buttonintranet-jlpsn.mongodb.net/test?retryWrites=true&w=majority";
+var user_rights = (process.env.ADMIN),
+	user_pass = (process.env.LOGIN),
+	client_uri = "mongodb access link";
 
 var client = new mongo_client(client_uri, {
 	useNewUrlParser: true,
@@ -33,61 +33,5 @@ client.connect(function(err) {
 //in the future, exports will have some getter/setter type functions for the sake of adding, deleting, or locating sessions.
 module.exports = {
 	store: session_store,
-	client: client/*,
-	destroy: function(session, err) {
-		//connect to the store
-		client.connect(async(err) => {
-			//try to access the db, collection and find session
-			try {
-				var collection = session_store.db('session_storage').collection('sessions');
-				var query = { Session: session };
-				collection.deleteOne(query, function(err, el) {
-					if (err) throw err;
-					console.log('Deleted session');
-				});
-			} catch (err) {
-				console.log(err);
-			} finally {
-				session_store.close();
-			}
-		});
-	},
-	get: function(session, err) {
-		//connect to the store
-		client.connect(async(err) => {
-			//try to access the db, collection and find session
-			try {
-				var collection = session_store.db('session_storage').collection('sessions');
-				console.log(id);
-				var query = { Session: session };
-				var el = await collection.findOne(query);
-				//if el is something, return it
-				return el;
-			} catch (err) {
-				console.log(err);
-			} finally {
-				session_store.close();
-			}
-		});
-	},
-	set: function(id, session, err) {
-		//get item
-		var el = session_store.get(id, function(err) {
-			if (err) throw err;
-			console.log('found item..');
-		});
-		//delete it
-		session_store.delete(el.id, function(err) {
-			if (err) throw err;
-			console.log('deleted.');
-		})
-		//create
-		client.connect(async(err) => {
-			var collection = session_store.db('session_storage').collection('sessions');
-			collection.insertOne(session);
-			console.log('inserted');
-			session_store.close();
-		})
-	}
-	*/
+	client: client
 };

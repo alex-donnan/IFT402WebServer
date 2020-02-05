@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html lang = "en">
+	<head>
+		<title>IFT 402 - Button</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="/css/loginStyle.css">
+		<script src="/src/login.js"></script>
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	</head>
+	<body>
+		<main>
+			<form id="loginForm">
+				<div class="img_cont">
+					<img src="/img/button_logo.svg" alt="Button logo" class="logo">
+				</div>
+				<div class="cont">
+					<label class="labelN" for="uname"><b>Username:</b></label>
+					<input class="inputN" id="inputN" type="text" placeholder="Enter Username" name="uname" required>
+
+					<label class="labelP" for="pwd"><b>Password:</b></label>
+					<input class="inputP" id="inputP" type="password" placeholder="Enter Password" name="pwd" required>
+				</div>
+				<div class="butt_cont">
+					<button id="login_button" type="submit" onclick="login($('#inputN').val(), $('#inputP').val())">Login</button>
+					<a href="createUser.html">New User?</a>
+				</div>
+			</form>
+		</main>
+		<footer>
+		</footer>
+	</body>
+</html>

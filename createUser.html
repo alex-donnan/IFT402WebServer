@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html lang = "en">
+	<head>
+		<title>IFT 402 - Button</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="/css/loginStyle.css">
+	</head>
+	<body>
+		<main>
+			<form name="loginForm" method="POST" action="/submit_new">
+				<div class="img_cont">
+					<img src="/img/button_logo.svg" alt="Button logo" class="logo">
+				</div>
+				<div class="cont_ext">
+					<label class="labelN" for="uname"><b>Username:</b></label>
+					<input class="inputN" type="text" placeholder="Enter Username" name="uname" required>
+
+					<label class="labelE" for="email"><b>Email:</b></label>
+					<input class="inputE" type="text" placeholder="Enter Email" name="email" required>
+
+					<label class="labelC" for="orgnum"><b>Organization Code:</b></label>
+					<input class="inputC" type="text" placeholder="Enter Code" name="orgnum" required>
+
+					<label class="labelP" for="pwd"><b>Password:</b></label>
+					<input class="inputP" type="password" placeholder="Enter Password" name="pwd" required>
+					
+					<label class="labelPR" for="pwdr"><b>Re-enter Password:</b></label>
+					<input class="inputPR" type="password" placeholder="Re-enter Password" name="pwdr" required>
+				</div>
+				<div class="butt_cont">
+					<button type="submit">Create</button>
+					<a href="login.html">Return to Login</a>
+				</div>
+		</main>
+		<footer>
+		</footer>
+	</body>
+</html>

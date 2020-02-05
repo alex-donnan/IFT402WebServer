@@ -1,0 +1,356 @@
+<!DOCTYPE HTML>
+<html lang = "en">
+	<head>
+		<title>IFT 402 - Button</title>
+		<meta charset="utf-8" http-equiv="cache-control" content="no-cache">
+		<link rel="stylesheet" type="text/css" href="/css/mainStyle.css">
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="/src/get_user.js"></script>
+		<script src="/src/update_user.js"></script>
+		<script src="/src/new_message.js"></script>
+		<script src="/src/new_task.js"></script>
+		<script src="/src/remove_task.js"></script>
+		<script src="/src/setup_today.js"></script>
+		<script src="/src/setup_cal.js"></script>
+		<script src="/src/update_cal.js"></script>
+		<script src="/src/highlight.js"></script>
+		<script src="/src/add_chat_group.js"></script>
+		<script src="/src/add_task_group.js"></script>
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript">
+			//globals for the page
+			const socket = io();
+			//user information
+			var user = '';
+			var last_user = '';
+			var org_user = [];
+			var org_num = '';
+			//chats
+			var chat_user = '';
+			var chat_list = [];
+			//tasks
+			var task_user = '';
+			var task_list = [];
+			var task_todo = [];
+			//calendar information
+			var cal_month = 0;
+			var cal_year = 0;
+
+			//on ready, start listening to sockets for updates!
+			$(document).ready(() => {
+				setup_cal(cal_year, cal_month);
+				//setup_today();
+				//update with message!
+				socket.on('message_get', function(data) {
+					console.log('Updating messages');
+					if (data.chatName == chat_user) {
+						if (data.name != last_user) {
+							document.getElementById('messages').innerHTML += '<li><hr></li><li><em>' + data.name + '</em></li><li>' + data.msg + '</li>';
+							last_user = data.name;
+						} else {
+							document.getElementById('messages').innerHTML += '<li>' + data.msg + '</li>';
+						}
+						//scroll to bottom
+						document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+					}
+				});
+				//update with tasks!
+				socket.on('task_get', function(data) {
+					var todo = data.task.todo;
+					var des = data.task.description;
+					var html_out =
+						'<div id="task_single" draggable="true">' +
+						'<p>' + des + '</p>' +
+						'<hr>';
+					var onclick = 'remove_task("' + des + '")';
+					todo.forEach(function(todo_el) {
+						html_out +=
+						'<label for="' + todo_el + '">' + todo_el + '</label>' + 
+						'<input type="checkbox" name="' + todo_el + '" value="' + todo_el + '">' + 
+						'<div class="clear"></div>';
+					});
+					html_out += "<img src='/img/button_confirm.svg' alt='Confirm sign' class='confirm_task' onclick='" + onclick + "'>";
+					html_out += '</div>';
+					document.getElementById('task_display').innerHTML += html_out;
+				});
+
+				//update groups!
+				socket.on('group_get', function(data) {
+					console.log('Updating groups');
+					var group_user = data.users;
+					console.log(group_user);
+					group_user.forEach(function(el) {
+						if (el == user) {
+							var onclick = 'update_user("' + data.name + '", "' + data.type + '")';
+							var groupID = (data.type == 'chat') ? 'chat_group' : 'task_group';
+							document.getElementById(groupID).innerHTML += "<li onclick='" + onclick + "'>" + data.name + '</li><hr>';
+						}
+					});
+				});
+			});
+
+			window.onload = get_user(user, last_user, org_user, org_num, chat_user, task_user);
+		</script>
+	</head>
+	<body>
+		<main>
+			<div class='wrapper'>
+				<img src="/img/button_logo.svg" alt="Button logo" class="logo">
+				<a href="/logout.html" class="logout">Logout</a>
+				<!-- Section for text chat -->
+				<div class="chat">
+					<div class="groups">
+						<!-- For user icons -->
+						<h3>Groups</h3>
+						<hr>
+						<ul id="chat_group" name="chat_group"></ul>
+						<img src='/img/button_add.svg' alt='Add sign' class='add' onclick="open_add_chat()">
+						<!-- Input for group addition -->
+						<div class="create_chat" id='create_chat'>
+							<h3>Add Group</h3>
+							<hr>
+							<form id="add_chat_form">
+								<label for="chat_input"><em>Group Name</em></label>
+								<input id="chat_input" type="text" name="group_input" autocomplete="off" required>
+								<br>
+								<br>
+								<label for="chat_users"><em>Choose Users</em></label>
+								<div id="chat_usernames">
+									<!-- checkbox options will be added here on load -->
+								</div>
+								<input id="hidden_confirm" style='display: none' type='submit' onclick='add_chat_group(user)'>
+								<img src='/img/button_confirm.svg' alt='Confirm sign' class='confirm' onclick='add_chat_group(user)'>
+								<img src='/img/button_cancel.svg' alt='Cancel sign' class='cancel' onclick='close_add_chat()'>
+							</form>
+						</div>
+					</div>
+					<!-- The chat itself for display and updating -->
+					<div class="chatbox">
+						<ul id="messages" name="messages"></ul>
+					</div>
+					<!-- The input form for the chat -->
+					<div class="input">
+						<form id="text_form">
+							<input id="text_input" type="text" name="text_input" autocomplete="off">
+							<button id="text_send" type="submit" onclick="new_message(user, chat_user)"><b>Send</b></button>
+						</form>
+					</div>
+					<!-- Scripts for chat nonsense -->
+					<script type="text/javascript">
+						function open_add_chat() {
+							document.getElementById('create_chat').style.display = 'block';
+						}
+
+						function close_add_chat() {
+							document.getElementById('add_chat_form').reset();
+							document.getElementById('create_chat').style.display = 'none';
+						}
+					</script>
+				</div>
+				<!-- Section for task scheduler -->
+				<div class="tasks">
+					<div class="groups">
+						<!-- For user icons -->
+						<h3>Groups</h3>
+						<hr>
+						<ul id="task_group" name="task_group"></ul>
+						<img src='/img/button_add.svg' alt='Add sign' class='add' onclick="open_add_task()">
+						<!-- Input for group addition -->
+						<div class="create_task" id='create_task'>
+							<h3>Add Group</h3>
+							<hr>
+							<form id="add_task_form">
+								<label for="task_group_input"><em>Group Name</em></label>
+								<input id="task_group_input" type="text" name="task_group_input" autocomplete="off" required>
+								<br>
+								<br>
+								<label for="task_users"><em>Choose Users</em></label>
+								<div id="task_usernames">
+									<!-- checkbox options will be added here on load -->
+								</div>
+								<input id="hidden_confirm" style='display: none' type='submit' onclick='add_task_group(user)'>
+								<img src='/img/button_confirm.svg' alt='Confirm sign' class='confirm' onclick='add_task_group(user)'>
+								<img src='/img/button_cancel.svg' alt='Cancel sign' class='cancel' onclick='close_add_task()'>
+							</form>
+						</div>
+						<!-- Scripts for task nonsense -->
+						<script type="text/javascript">
+							function open_add_task() {
+								document.getElementById('create_task').style.display = 'block';
+							}
+
+							function close_add_task() {
+								document.getElementById('add_task_form').reset();
+								document.getElementById('create_task').style.display = 'none';
+							}
+						</script>
+					</div>
+					<div class="task_list">
+						<div id="task_display">
+							<!-- This is filled by get_user() -->
+						</div>
+						<img src='/img/button_add.svg' alt='Add sign' class='add' id="task_footer" onclick="open_new_task()">
+					</div>
+					<div class="edit" id="task_editor">
+						<!-- Modal edit section -->
+						<h3>Edit Task</h3>
+						<hr>
+						<form class="task_info" id="task_info">
+							<div class="task_description">
+								<textarea id="task_input" rows="6" required></textarea>
+							</div>
+							<div class="task_checklist">
+								<h3>ToDo List</h3>
+								<hr>
+								<div id="task_list_form">
+									<input type="text" name="task_list_input" id="task_list_input" autocomplete="off" required>
+									<input id="hidden_confirm" style='display: none' type='submit' onclick="add_todo()">
+								</div>
+								<div id="task_todo_list">
+									<!-- This is filled in by add todo() -->
+								</div>
+							</div>
+							<!-- ADD THE INPUT FOR OVERARCHING FORM HERE -->
+							<input id="hidden_confirm" style='display: none' type='submit' onclick="new_task(user, task_todo)">
+							<img src='/img/button_confirm.svg' alt='Confirm sign' class='confirm' onclick='new_task(user, task_todo)'>
+							<img src='/img/button_cancel.svg' alt='Cancel sign' class='cancel' onclick='close_new_task()'>
+						</form>
+					</div>
+					<script type="text/javascript">
+						function open_new_task() {
+							task_todo = [];
+							document.getElementById('task_editor').style.display = 'block';
+						}
+
+						function close_new_task() {
+							task_todo = [];
+							document.getElementById('task_todo_list').innerHTML = '';
+							document.getElementById('task_editor').style.display = 'none';
+						}
+
+						function add_todo() {
+							event.preventDefault();
+							task_todo.push($('#task_list_input').val());
+							document.getElementById('task_todo_list').innerHTML += '<p>' + $('#task_list_input').val() + '</p>';
+							document.getElementById('task_list_input').value = '';
+							document.getElementById('task_list_input').focus();
+						}
+					</script>
+				</div>
+				<!-- Section for calendar -->
+				<div class="calendar">
+					<div class="date">
+						<!-- Persistent calendar -->
+						<table class="title">
+							<tr>
+								<th onclick="decrementMonth()" style="cursor: pointer">&#8592;</th>
+								<th><h3 id="month"></h3></th>
+								<th onclick="incrementMonth()" style="cursor: pointer">&#8594;</th>
+							</tr>
+						</table>
+						<table class="display">
+							<tr>
+								<th id="s">S</th>
+								<th id="m">M</th>
+								<th id="t">T</th>
+								<th id="w">W</th>
+								<th id="tr">T</th>
+								<th id="f">F</th>
+								<th id="sa">S</th>
+							</tr>
+							<tr>
+								<td id="1" onclick="highlight(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></td>
+								<td id="2" onclick="highlight(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></td>
+								<td id="3" onclick="highlight(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></td>
+								<td id="4" onclick="highlight(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></td>
+								<td id="5" onclick="highlight(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></td>
+								<td id="6" onclick="highlight(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></td>
+								<td id="7" onclick="highlight(this.id)" ondrop="drop(event)" ondragover="allowDrop(event)"></td>
+							</tr>
+							<tr>
+								<td  id="8" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td  id="9" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="10" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="11" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="12" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="13" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="14" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+							</tr>
+							<tr>
+								<td id="15" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="16" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="17" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="18" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="19" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="20" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="21" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+							</tr>
+							<tr>
+								<td id="22" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="23" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="24" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="25" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="26" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="27" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="28" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+							</tr>
+							<tr>
+								<td id="29" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="30" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="31" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="32" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="33" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="34" onclick="highlight(this.id)" ondrop="drop(event)"></td>	
+								<td id="35" onclick="highlight(this.id)" ondrop="drop(event)"></td>				
+							</tr>
+							<tr>
+								<td id="36" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="37" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="38" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="39" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="40" onclick="highlight(this.id)" ondrop="drop(event)"></td>
+								<td id="41" onclick="highlight(this.id)" ondrop="drop(event)"></td>	
+								<td id="42" onclick="highlight(this.id)" ondrop="drop(event)"></td>					
+							</tr>
+						</table>
+
+						<script type="text/javascript">
+							function incrementMonth() {
+								cal_month = (cal_month + 1) % 12;
+								if (cal_month == 0) cal_year += 1;
+								update_cal(cal_year, cal_month);
+							}
+
+							function decrementMonth() {
+								cal_month = (cal_month - 1) % 12;
+								if (Math.sign(cal_month) == -1) cal_month = 11;
+								if (cal_month == 11) cal_year -= 1;
+								update_cal(cal_year, cal_month);
+							}
+
+							function drop(event) {
+
+							}
+
+							function allowDrop(event) {
+								event.preventDefault();
+							}
+						</script>
+					</div>
+					<!--
+					<div class="edit">
+						<h3 id="today">Today is: </h3>
+						<hr>
+						<h3 id="eventFeed">Events: </h3>
+						<div id="calendar_info">
+						</div>
+						<img src='/img/button_add.svg' alt='Add sign' class='add' onclick="addEvent()">
+					</div>
+				-->
+				</div>
+			</div>
+		</main>
+		<footer>
+		</footer>
+	</body>
+</html>
